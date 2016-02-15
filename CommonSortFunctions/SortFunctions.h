@@ -20,6 +20,14 @@
 void bubbleSortAscending(int array[], int count);
 
 /**
+ *  @brief 选择排序法
+ *
+ *  @param array int数组
+ *  @param count 数组长度
+ */
+void selectSortAscending(int array[], int count);
+
+/**
  *  @brief 快速排序法
  *
  *  @param array int数组
@@ -27,14 +35,6 @@ void bubbleSortAscending(int array[], int count);
  *  @param hight 高下标
  */
 void quickSortScending(int array[], int low, int hight);
-
-/**
- *  @brief 选择排序法
- *
- *  @param array int数组
- *  @param count 数组长度
- */
-void selectSortAscending(int array[], int count);
 
 /**
  *  @brief 插入排序法
@@ -60,5 +60,13 @@ void shellSortAscending(int array[], int count);
  *  @param count 数组长度
  */
 void mergeSortAscending(int array[], int count);
+
+/**
+ *  @brief 堆排序法
+ *
+ *  @param array int数组
+ *  @param count 数组长度
+ */
+void heapSortAscending(int array[], int count);
 
 #endif /* SortFunctions_h */

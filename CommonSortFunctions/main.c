@@ -9,9 +9,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include "SortFunctions.h"
 
 #define kUnsortedArrayLength 100
+#define kArrayIntegerDistinct 0
+#define kTimeStat 1
 
 /**
  *  @brief 打印数组
@@ -94,18 +97,20 @@ int checkIfDistinct(int arrray[], int count, int ingeter) {
 }
 
 /**
- *  @brief 初始化数组array, 不重复
+ *  @brief 初始化数组array
  *
  *  @param array int数组
  *  @param count 数组长度
  */
-void setupArrayDistinct(int array[], int count) {
+void setupArray(int array[], int count) {
     int integer = 0;
     for (int i = 0; i < count; i++) {
         integer = arc4random_uniform(count * 5);
+#if kArrayIntegerDistinct
         while (checkIfDistinct(array, i, integer)) {
             integer = arc4random_uniform(count * 5);
         }
+#endif
         array[i] = integer;
     }
 }
@@ -117,25 +122,36 @@ void sortLoop() {
     int count = kUnsortedArrayLength;
     int length = count * sizeof(int);
     int *array = malloc(length);
+    if (array == NULL) {
+        printf("********************************\n");
+        printf("\t\t memeory alloc fail");
+        printf("********************************\n");
+        return;
+    }
     int *arrayCopy = malloc(length);
+    if (arrayCopy == NULL) {
+        printf("********************************\n");
+        printf("\t\t memeory alloc fail");
+        printf("********************************\n");
+        return;
+    }
     
     int funcNum = -1;
     
     while (funcNum != 0) {
-        setupArrayDistinct(array, count);
+        setupArray(array, count);
         memcpy(arrayCopy, array, length);
-        
-        printf("############## loop begin ##############\n");
-        
         printIntArray(array, count);
         
+        printf("############## loop begin ##############\n");
         printf("select sort function: \n");
         printf("  0. exit;\n");
         printf("  1. bubble sort;\n");
-        printf("  2. quick sort;\n");
-        printf("  3. select sort;\n");
+        printf("  2. select sort;\n");
+        printf("  3. quick sort;\n");
         printf("  4. shell sort;\n");
         printf("  5. merge sort;\n");
+        printf("  6. heap sort;\n");
         
         scanf("%d", &funcNum);
         
@@ -147,12 +163,12 @@ void sortLoop() {
                 bubbleSortAscending(array, count);
                 break;
             case 2:
-                printf("+++++ quickSortScending +++++\n");
-                quickSortScending(array, 0, count - 1);
-                break;
-            case 3:
                 printf("+++++ selectSortAscending +++++\n");
                 selectSortAscending(array, count);
+                break;
+            case 3:
+                printf("+++++ quickSortScending +++++\n");
+                quickSortScending(array, 0, count - 1);
                 break;
             case 4:
                 printf("+++++ shellSortAscending +++++\n");
@@ -162,11 +178,15 @@ void sortLoop() {
                 printf("+++++ mergeSortAscending +++++\n");
                 mergeSortAscending(array, count);
                 break;
+            case 6:
+                printf("+++++ heapSortAscending +++++\n");
+                heapSortAscending(array, count);
+                break;
             default:
                 printf("error number -_-!\n\n");
                 break;
         }
-        
+
         checkSortedResult(array, count);
         if (checkSortedResult(array, count)) {
             if (checkDistinctSourceExistInSorted(arrayCopy, array, count)) {
@@ -178,16 +198,81 @@ void sortLoop() {
         
         printf("the result is: \n");
         printIntArray(array, count);
-        
+
         printf("############## loop end ##############\n\n\n");
     }
     
     free(array);
 }
 
-int main(int argc, const char * argv[]) {
+void sortTimeStat(int count) {
+    int length = count * sizeof(int);
+    int *array = malloc(length);
+    if (array == NULL) {
+        printf("********************************\n");
+        printf("\t\t memeory alloc fail");
+        printf("********************************\n");
+        return;
+    }
     
+    for (int i = 1; i <= 6; i++) {
+        setupArray(array, count);
+        
+        struct timeval begin;
+        gettimeofday(&begin, NULL);
+
+        switch (i) {
+            case 0:
+                break;
+            case 1:
+                printf("+++++ bubbleSortAscending +++++\n");
+                bubbleSortAscending(array, count);
+                break;
+            case 2:
+                printf("+++++ selectSortAscending +++++\n");
+                selectSortAscending(array, count);
+                break;
+            case 3:
+                printf("+++++ quickSortScending +++++\n");
+                quickSortScending(array, 0, count - 1);
+                break;
+            case 4:
+                printf("+++++ shellSortAscending +++++\n");
+                shellSortAscending(array, count);
+                break;
+            case 5:
+                printf("+++++ mergeSortAscending +++++\n");
+                mergeSortAscending(array, count);
+                break;
+            case 6:
+                printf("+++++ heapSortAscending +++++\n");
+                heapSortAscending(array, count);
+                break;
+            default:
+                break;
+        }
+
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        printf("time interval is : %lds %dus\n\n\n", (end.tv_sec  - begin.tv_sec), (end.tv_usec - begin.tv_usec));
+    }
+    free(array);
+}
+
+int main(int argc, const char * argv[]) {
+#if kTimeStat
+    int count = 10000;
+    for (int i = 0; i < 4; i++) {
+        printf("############## array length = %d ##############\n", count);
+        sortTimeStat(count);
+        count *= 10;
+        printf("############## loop end ##############\n\n\n");
+    }
+#else
     sortLoop();
+#endif
     
     return 0;
 }
+
+

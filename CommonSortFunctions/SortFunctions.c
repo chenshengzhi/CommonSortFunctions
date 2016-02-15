@@ -9,10 +9,12 @@
 #include <stdlib.h>
 #include "SortFunctions.h"
 
+int temp_;
+
 void swap(int array[], int one, int anther) {
-    int temp = array[one];
+    temp_ = array[one];
     array[one] = array[anther];
-    array[anther] = temp;
+    array[anther] = temp_;
 }
 
 /**
@@ -28,6 +30,27 @@ void bubbleSortAscending(int array[], int count) {
             if (array[unsorted] > array[unsorted+1]) {
                 swap(array, unsorted, unsorted+1);
             }
+        }
+    }
+}
+
+/**
+ *  @brief 选择排序法
+ *
+ *  @param array int数组
+ *  @param count 数组长度
+ */
+void selectSortAscending(int array[], int count) {
+    int min;
+    for (int target = 0; target < count - 1; target++) {
+        min = target;
+        for (int loop = target + 1; loop < count; loop++) {
+            if (array[loop] < array[min]) {
+                min = loop;
+            }
+        }
+        if (min != target) {
+            swap(array, min, target);
         }
     }
 }
@@ -63,27 +86,6 @@ void quickSortScending(int array[], int low, int hight) {
     
     quickSortScending(array, low, left-1);
     quickSortScending(array, left+1, hight);
-}
-
-/**
- *  @brief 选择排序法
- *
- *  @param array int数组
- *  @param count 数组长度
- */
-void selectSortAscending(int array[], int count) {
-    int min;
-    for (int target = 0; target < count - 1; target++) {
-        min = target;
-        for (int loop = target + 1; loop < count; loop++) {
-            if (array[loop] < array[min]) {
-                min = loop;
-            }
-        }
-        if (min != target) {
-            swap(array, min, target);
-        }
-    }
 }
 
 /**
@@ -131,7 +133,7 @@ void shellSortAscending(int array[], int count) {
 }
 
 /**
- *  @brief 合并有序数组array[first...mid]合array[mid+1...last]
+ *  @brief 归并排序法步骤2: 合并有序数组array[first...mid]合array[mid+1...last]
  *
  *  @param array int数组
  *  @param first 第一个元素的下标
@@ -173,7 +175,7 @@ void mergeSortAscendingCombine(int array[], int first, int mid, int last, int te
 }
 
 /**
- *  @brief 递归对半划分, 再进行合并
+ *  @brief 归并排序法步骤1: 递归对半划分, 再进行合并
  *
  *  @param array int数组
  *  @param first 划分的部分第一个下标
@@ -197,7 +199,59 @@ void mergeSortAscendingDivide(int array[], int first, int last, int temp[]) {
  */
 void mergeSortAscending(int array[], int count) {
     int *temp = malloc(sizeof(int) * count);
+    if (temp == NULL) {
+        printf("********************************\n");
+        printf("\t\t memeory alloc fail");
+        printf("********************************\n");
+        return;
+    }
     mergeSortAscendingDivide(array, 0, count - 1, temp);
     free(temp);
+}
+
+/**
+ *  @brief 堆排序法步骤: 堆化数组, 大根堆
+ *
+ *  @param array int数组
+ *  @param index 要下沉的节点位置
+ *  @param count 数组长度
+ */
+void heapSortAcsendingAdjust(int array[], int index, int count) {
+    int temp = array[index];
+    int z = 2 * index + 1;
+    while (z < count) {
+        if (z + 1 < count && array[z + 1] > array[z]) {
+            z++;
+        }
+        
+        if (array[z] > temp) {
+            array[index] = array[z];
+            index = z;
+            z = 2 * index + 1;
+        } else {
+            break;
+        }
+    }
+    array[index] = temp;
+}
+
+/**
+ *  @brief 堆排序法
+ *
+ *  @param array int数组
+ *  @param count 数组长度
+ */
+void heapSortAscending(int array[], int count) {
+    for (int i = count/2 - 1; i >= 0; i--) {
+        heapSortAcsendingAdjust(array, i, count);
+    }
+    
+    int temp = 0;
+    for (int i = count - 1; i > 0; i--) {
+        temp = array[i];
+        array[i] = array[0];
+        array[0] = temp;
+        heapSortAcsendingAdjust(array, 0, i);
+    }
 }
 
